@@ -16,6 +16,7 @@ keyword = [
     '番禺路',
     '愚园路',
     '江苏路',
+    '地铁'
 ]
 
 def appendRoad():

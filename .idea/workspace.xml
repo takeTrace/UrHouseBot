@@ -2,9 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b536e5f4-6f35-4dc2-ad58-64d22f40b78a" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/UrHouseBot.iml" afterPath="$PROJECT_DIR$/.idea/UrHouseBot.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/UrHouseBot/UrHouseBot/parse_tool.py" afterPath="$PROJECT_DIR$/UrHouseBot/UrHouseBot/parse_tool.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/UrHouseBot/UrHouseBot/spiders/doubanGroup.py" afterPath="$PROJECT_DIR$/UrHouseBot/UrHouseBot/spiders/doubanGroup.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -22,8 +21,8 @@
       <file leaf-file-name="doubanGroup.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/UrHouseBot/UrHouseBot/spiders/doubanGroup.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-434">
-              <caret line="8" column="14" lean-forward="true" selection-start-line="8" selection-start-column="14" selection-end-line="10" selection-end-column="5" />
+            <state relative-caret-position="521">
+              <caret line="49" column="8" lean-forward="false" selection-start-line="49" selection-start-column="8" selection-end-line="49" selection-end-column="8" />
               <folding>
                 <element signature="e#24#37#0" expanded="true" />
               </folding>
@@ -34,8 +33,8 @@
       <file leaf-file-name="parse_tool.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/UrHouseBot/UrHouseBot/parse_tool.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="193">
-              <caret line="31" column="0" lean-forward="false" selection-start-line="31" selection-start-column="0" selection-end-line="38" selection-end-column="31" />
+            <state relative-caret-position="27">
+              <caret line="21" column="0" lean-forward="false" selection-start-line="21" selection-start-column="0" selection-end-line="52" selection-end-column="24" />
               <folding>
                 <element signature="e#1#10#0" expanded="true" />
               </folding>
@@ -83,9 +82,9 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/UrHouseBot/UrHouseBot/spiders/parse_tool.py" />
-        <option value="$PROJECT_DIR$/UrHouseBot/UrHouseBot/parse_tool.py" />
-        <option value="$PROJECT_DIR$/UrHouseBot/UrHouseBot/spiders/doubanGroup.py" />
         <option value="$PROJECT_DIR$/README.md" />
+        <option value="$PROJECT_DIR$/UrHouseBot/UrHouseBot/spiders/doubanGroup.py" />
+        <option value="$PROJECT_DIR$/UrHouseBot/UrHouseBot/parse_tool.py" />
       </list>
     </option>
   </component>
@@ -487,16 +486,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/UrHouseBot/UrHouseBot/parse_tool.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="193">
-          <caret line="31" column="0" lean-forward="false" selection-start-line="31" selection-start-column="0" selection-end-line="38" selection-end-column="31" />
-          <folding>
-            <element signature="e#1#10#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="90">
@@ -505,10 +494,20 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/UrHouseBot/UrHouseBot/parse_tool.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="27">
+          <caret line="21" column="0" lean-forward="false" selection-start-line="21" selection-start-column="0" selection-end-line="52" selection-end-column="24" />
+          <folding>
+            <element signature="e#1#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/UrHouseBot/UrHouseBot/spiders/doubanGroup.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-434">
-          <caret line="8" column="14" lean-forward="true" selection-start-line="8" selection-start-column="14" selection-end-line="10" selection-end-column="5" />
+        <state relative-caret-position="521">
+          <caret line="49" column="8" lean-forward="false" selection-start-line="49" selection-start-column="8" selection-end-line="49" selection-end-column="8" />
           <folding>
             <element signature="e#24#37#0" expanded="true" />
           </folding>

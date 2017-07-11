@@ -70,8 +70,8 @@ class DoubangroupSpider(scrapy.Spider):
                 continue
 
             # 时间符合要求
-            title = t.css('a::attr(title)::text').extract_first().strip()
-            print("需要解析: " + title)
+            title = t.css('a::attr(title)').extract_first().strip()
+            print("时间合适-需要解析: " + title)
             link = t.css('a::attr(href)').extract_first()
             # 默认解析详情
             to_parse = self.parse_detail_article
