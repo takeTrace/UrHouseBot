@@ -36,6 +36,8 @@ def is_need_parse(date):
         dformat = format_date
     if re.search(".*:.*", date):
         dformat = format_dateTime
+    if re.search(".*:\d{2}:.*", date):
+        dformat = format_dateTimed
     delta_time = datetime.now() - datetime.strptime(date, dformat)
     return delta_time.days < 30
 
@@ -51,3 +53,4 @@ def filter_title(title):
 
 format_dateTime = '%Y-%m-%d %H:%M'
 format_date = '%Y-%m-%d'
+format_dateTimed = '%Y-%m-%d %H:%M:%S'
