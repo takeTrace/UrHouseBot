@@ -3,7 +3,7 @@ import re
 import random
 from datetime import datetime
 
-keyword = [
+regions = [
     '徐家汇',
     '湖南路',
     '上海图书馆',
@@ -19,9 +19,20 @@ keyword = [
     '地铁'
 ]
 
-def appendRoad():
-    keys =  keyword[0]
-    for key in keyword[1:]:
+conditions = [
+    '菜市场',
+    '菜场',
+    '地铁'
+]
+
+avoids = [
+    '限女生',
+    '已出租'
+]
+
+def appendKeys(dicts):
+    keys =  dicts[0]
+    for key in dicts[1:]:
         keys = keys + "|" + key
     return keys
 
@@ -41,13 +52,28 @@ def is_need_parse(date):
     delta_time = datetime.now() - datetime.strptime(date, dformat)
     return delta_time.days < 30
 
+
+
 def random_cat():
     return str(random.randint(1, 50) + 1000)
 
-def filter_title(title):
-    restr = ".*{0}+.*".format(appendRoad())
-    if re.search(restr, title):
-        return True
+def filter_title(content):
+    re_region = ".*{0}+.*".format(appendKeys(regions))
+    match = re.search(re_region, content)
+    if match:
+        re_avoid = '.*{0}+.*'.format(appendKeys(avoids))
+        avoid_match = re.search(re_avoid, content)
+        if avoid_match:
+            return False
+        else:
+            return match.group()
+    return False
+
+def filter_ur_need(content):
+    re_need = ".*{0}+.*".format(appendKeys(conditions))
+    match = re.search(re_need, content)
+    if match:
+        return match.group()
     return False
 
 

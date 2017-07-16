@@ -3,6 +3,7 @@ import scrapy
 import UrHouseBot
 from UrHouseBot import parse_tool
 import re
+from UrHouseBot.UrHouseBot.items import UrhousebotItem
 
 class DoubangroupSpider(scrapy.Spider):
     keys = parse_tool.keyword
@@ -129,8 +130,41 @@ class DoubangroupSpider(scrapy.Spider):
         # 解析具体的帖子, 查看是否含有需要解析的关键要素
         print('解析具体帖子' + response.url)
 
+        # 获取正文内容
+        content = response.css('#link-report').xpath('string(.//p)').extract_first().strip()
+        response.meta['content'] = content
+
+        # 判断是否符合第一需要
+        key = parse_tool.filter_title(content)
+        if key:
+            response.meta['key'] = key
+            self.parse_target_article(response)
+            return
+        else:
+            return
+
         pass
 
     def parse_target_article(self, response):
-        # 解析含有关键词的帖子,
-        print('帖子中包含有相关的关键词, 且未出现已出租的字样, 再次深度解析' + response.url)
+        # 解析含有关键词的帖子
+
+        item = UrhousebotItem()
+
+        # 把含有附加条件的房源标为第一梯队
+        ur_need = parse_tool.filter_ur_need(content)
+        if  ur_need:
+            item['level'] = 'first'
+
+        item['title'] = response.css('#content h1::text').extract_first().strip()
+        item['keys'] = response.meta['key']
+        content = response.meta['content']
+        item['content'] = content
+        item['condition'] = ur_need
+
+        locations = re.findall(r'.{5,8}路', content)
+        payType = re.search(r'押.{1}付.{1}', content)
+
+        item['price'] = re.findall(r'\d{4}元{0,1}', content)
+        item['payType'] = payType
+        item['locations'] = locations
+

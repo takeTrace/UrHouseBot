@@ -11,4 +11,16 @@ import scrapy
 class UrhousebotItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
-    pass
+
+    title = scrapy.Field()
+    keys = scrapy.Field()
+    conditions = scrapy.Field()
+
+    locations = scrapy.Field()
+    price = scrapy.Field()
+    content = scrapy.Field()
+
+    images = scrapy.Field()
+
+    level = scrapy.Field()
+    payTpe = scrapy.Field()
