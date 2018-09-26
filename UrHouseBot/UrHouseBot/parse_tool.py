@@ -4,19 +4,24 @@ import random
 from datetime import datetime
 
 regions = [
-    '徐家汇',
-    '湖南路',
-    '上海图书馆',
-    '武康路',
-    '乌鲁木齐',
-    '兴国路',
-    '幸福路',
-    '平武路',
-    '镇宁路',
-    '番禺路',
-    '愚园路',
-    '江苏路',
-    '地铁'
+    '龙华',
+    '龙华中路',
+    '东安',
+    '斜土',
+    '鲁班',
+    '西木',
+    '大木桥',
+    '小木桥',
+    '绿地',
+    '绿地缤纷',
+    '蒙自路',
+    '瞿溪路',
+    '鲁中小区',
+    '汇暻生活广场',
+    '瞿溪坊',
+    '德福苑',
+    '南园大厦',
+    '东安'
 ]
 
 conditions = [
@@ -27,7 +32,15 @@ conditions = [
 
 avoids = [
     '限女生',
-    '已出租'
+    '已出租',
+    '城家',
+    '公寓',
+    '求租',
+    '已经租'
+]
+
+banFrom = [
+    '啦啦啦啦',
 ]
 
 def appendKeys(dicts):
@@ -38,19 +51,21 @@ def appendKeys(dicts):
 
 def get_next_page_link(response):
     next = response.css('.next a::attr(href)').extract_first()
-    print('下一页: ' + next)
+    # print('下一页: ' + next)
     return next
 
 def is_need_parse(date):
     if not re.search('.*\d{4}.*', date):
         date = str(datetime.now().year) + '-' + date
         dformat = format_date
+    if re.search('.*\d{4}-\d{1,2}-', date):
+        dformat = format_date
     if re.search(".*:.*", date):
         dformat = format_dateTime
     if re.search(".*:\d{2}:.*", date):
         dformat = format_dateTimed
     delta_time = datetime.now() - datetime.strptime(date, dformat)
-    return delta_time.days < 30
+    return delta_time.days < 1
 
 
 

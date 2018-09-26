@@ -3,10 +3,11 @@ import scrapy
 import UrHouseBot
 from UrHouseBot import parse_tool
 import re
-from UrHouseBot.UrHouseBot.items import UrhousebotItem
+from UrHouseBot.items import UrhousebotItem
 
 class DoubangroupSpider(scrapy.Spider):
-    keys = parse_tool.keyword
+    keys = parse_tool.regions
+    avoids = parse_tool.avoids
     name = "doubanGroup"
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36',
@@ -24,16 +25,16 @@ class DoubangroupSpider(scrapy.Spider):
     def parse(self, response):
         # 解析小组列表页
 
-        print('-'*150)
+        # print('-'*150)
         groups = response.css('.groups .result .title a')
         for group in groups:
             t = group.css('::text').extract_first().strip()
             l = group.css('a::attr(href)').extract_first().strip() + 'discussion?start=0'
             # gid = l.re(r'.*/(\d+)/.*')
             gid = group.css('a::attr(onclick)').re('.*sid: (\d+)}.*').pop()
-            print('grpup id: ' + gid)
-            print('link: ' + l)
-            print('title: ' + t)
+            # print('grpup id: ' + gid)
+            # print('link: ' + l)
+            # print('title: ' + t)
 
 
             # 1. 返回在某小组里根据关键词搜索的结果(直接拼接id和关键词即使搜索结果的url)
@@ -49,7 +50,7 @@ class DoubangroupSpider(scrapy.Spider):
 
         # 3. 下一页
         next = parse_tool.get_next_page_link(response)
-        print('下一页: ' + next)
+        # print('下一页: ' + next)
         yield scrapy.Request(next, headers=self.headers)
         pass
 
@@ -59,12 +60,12 @@ class DoubangroupSpider(scrapy.Spider):
         # 解析某小组的帖子列表
 
         gtl = response.css('head title::text').extract_first().strip()
-        print('解析' + gtl + ' 页面' + '^'*100)
+        # print('解析' + gtl + ' 页面' + '^'*100)
 
         # 获取下一页
         next = parse_tool.get_next_page_link(response)
         if next:
-            print(gtl + "小组的下一页" + next)
+            # print(gtl + "小组的下一页" + next)
             yield scrapy.Request(next, headers=self.headers, callback=self.parse_group)
 
         titles = response.css('.olt .title')
@@ -75,7 +76,7 @@ class DoubangroupSpider(scrapy.Spider):
 
             # 时间符合要求
             title = t.css('a::attr(title)').extract_first().strip()
-            print("时间合适-需要解析: " + title)
+            # print("时间合适-需要解析: " + title)
             link = t.css('a::attr(href)').extract_first()
             # 默认解析详情
             to_parse = self.parse_detail_article
@@ -93,16 +94,16 @@ class DoubangroupSpider(scrapy.Spider):
         # 解析根据设定的关键词的搜索某小组的结果的帖子
         ci = response.css('title::text').re(r'.*:(.+)$')
         if len(ci) > 0:
-            print('接续搜索的关键词: ' + ci[0])
+            print('搜索的关键词: ' + ci[0] + '\n')
 
 
         gtl = response.css('head title::text').extract_first().strip()
-        print('解析' + gtl + ' 页面' + '^' * 100)
+        # print('解析[' + gtl + '] 页面\n' + '^' * 100)
 
         # 获取下一页
         next = parse_tool.get_next_page_link(response)
         if next:
-            print(gtl + "小组的下一页" + next)
+            # print(gtl + "小组的下一页" + next)
             yield scrapy.Request(next, headers=self.headers, callback=self.parse_search_result)
 
         titles = response.css('tbody .pl')
@@ -113,7 +114,7 @@ class DoubangroupSpider(scrapy.Spider):
 
             # 时间符合要求
             title = t.css('.td-subject a::attr(title)').extract_first().strip()
-            print("时间合适-需要解析: " + title)
+            # print("时间合适-需要解析: " + title)
             link = t.css('.td-subject a::attr(href)').extract_first().strip()
             # 默认解析详情
             to_parse = self.parse_detail_article
@@ -128,7 +129,7 @@ class DoubangroupSpider(scrapy.Spider):
 
     def parse_detail_article(self, response):
         # 解析具体的帖子, 查看是否含有需要解析的关键要素
-        print('解析具体帖子' + response.url)
+        # print('解析具体帖子: \n' + response.url)
 
         # 获取正文内容
         content = response.css('#link-report').xpath('string(.//p)').extract_first().strip()
@@ -148,23 +149,28 @@ class DoubangroupSpider(scrapy.Spider):
     def parse_target_article(self, response):
         # 解析含有关键词的帖子
 
-        item = UrhousebotItem()
+        print('解析具体帖子: \n' + response.url)
+        # item = UrhousebotItem()
 
-        # 把含有附加条件的房源标为第一梯队
-        ur_need = parse_tool.filter_ur_need(content)
-        if  ur_need:
-            item['level'] = 'first'
+        # content = response.meta['content']
+        # # 把含有附加条件的房源标为第一梯队
+        # ur_need = parse_tool.filter_ur_need(content)
+        # if  ur_need:
+        #     item['level'] = 'first'
 
-        item['title'] = response.css('#content h1::text').extract_first().strip()
-        item['keys'] = response.meta['key']
-        content = response.meta['content']
-        item['content'] = content
-        item['condition'] = ur_need
+        completeTitle = response.css('.tablecc::text').extract_first()
+        title = (completeTitle and completeTitle.strip()) or response.css('#content h1::text').extract_first().strip()
+        # item['title'] = response.css('#content h1::text').extract_first().strip()
+        # item['keys'] = response.meta['key']
+        print('title: ' + title)
+        # content = response.meta['content']
+        # item['content'] = content
+        # item['condition'] = ur_need
 
-        locations = re.findall(r'.{5,8}路', content)
-        payType = re.search(r'押.{1}付.{1}', content)
+        # locations = re.findall(r'.{5,8}路', content)
+        # payType = re.search(r'押.{1}付.{1}', content)
 
-        item['price'] = re.findall(r'\d{4}元{0,1}', content)
-        item['payType'] = payType
-        item['locations'] = locations
+        # item['price'] = re.findall(r'\d{4}元{0,1}', content)
+        # item['payType'] = payType
+        # item['locations'] = locations
 
