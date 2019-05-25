@@ -1,12 +1,17 @@
-
 import re
 import random
 from datetime import datetime
+import json
 
 regions = [
     '龙华',
     '龙华中路',
     '东安',
+    '13号',
+    '世博会博物馆',
+    '成山路',
+    '长寿路',
+    '零陵',
     '斜土',
     '鲁班',
     '西木',
@@ -21,7 +26,13 @@ regions = [
     '瞿溪坊',
     '德福苑',
     '南园大厦',
-    '东安'
+    '东安',
+    '茶陵',
+    '嘉善路',
+    '江苏路',
+    '静安寺',
+    '金沙江路',
+    '长清路'
 ]
 
 conditions = [
@@ -30,31 +41,67 @@ conditions = [
     '地铁'
 ]
 
-avoids = [
-    '限女生',
-    '已出租',
-    '城家',
-    '公寓',
-    '求租',
-    '已经租'
-]
+avoids = {
+    "title": ['限女生', '已出租', '城家', '公寓', '求租', '已经租', '精装', '限女', '限妹', '限一个妹'],
+    "content":
+    ['限女生', '已出租', '城家', '公寓', '求租', '已经租', '精装', '限女', '限妹', '限一个妹']
+}
 
 banFrom = [
     '啦啦啦啦',
 ]
 
+def getRegions():
+    data = regions
+    try:
+        with open('./regions.json', 'r') as f:
+            try:
+                data = json.load(f)
+            except:
+                print('regions文件错误')
+    except:
+        print('没有regions文件')
+        with open('./regions.json', 'w') as f:
+            json.dump(data, f)
+    return list(set(data))
+
+
+def getAvoids(use='title'):
+    data = avoids
+    try:
+        with open('./avoids.json', 'r') as f:
+            try:
+                data = json.load(f)
+            except:
+                print('avoid文件错误')
+    except:
+        print('没有avoid文件')
+        with open('./avoids.json', 'w') as f:
+            json.dump(data, f)
+    return list(set(data[use]+data['content']))
+
+
 def appendKeys(dicts):
-    keys =  dicts[0]
+    keys = dicts[0]
     for key in dicts[1:]:
         keys = keys + "|" + key
     return keys
+
 
 def get_next_page_link(response):
     next = response.css('.next a::attr(href)').extract_first()
     # print('下一页: ' + next)
     return next
 
-def is_need_parse(date):
+
+format_dateTime = '%Y-%m-%d %H:%M'
+format_date = '%Y-%m-%d'
+format_dateTimed = '%Y-%m-%d %H:%M:%S'
+
+
+def is_need_parse(date, limit=18):
+    if re.search('.*天.*', date):
+        return True
     if not re.search('.*\d{4}.*', date):
         date = str(datetime.now().year) + '-' + date
         dformat = format_date
@@ -65,24 +112,31 @@ def is_need_parse(date):
     if re.search(".*:\d{2}:.*", date):
         dformat = format_dateTimed
     delta_time = datetime.now() - datetime.strptime(date, dformat)
-    return delta_time.days < 1
-
+    return delta_time.days < limit
 
 
 def random_cat():
     return str(random.randint(1, 50) + 1000)
 
-def filter_title(content):
-    re_region = ".*{0}+.*".format(appendKeys(regions))
-    match = re.search(re_region, content)
+
+
+def filter_title(content, title=None, link=None, use='title'):
+    content = content.strip()
+    re_region = "{0}+".format(appendKeys(getRegions()))
+    # re_region = re_region#.replace(r'{', r'\{').replace(r'}', r'\}')
+    match = re.findall(re_region, content)
     if match:
-        re_avoid = '.*{0}+.*'.format(appendKeys(avoids))
-        avoid_match = re.search(re_avoid, content)
+        re_avoid = '{0}+'.format(appendKeys(getAvoids(use)))
+        # re_avoid = re_avoid#.replace(r'{', r'\{').replace(r'}', r'\}')
+        avoid_match = re.findall(re_avoid, content)
         if avoid_match:
-            return False
+            am = list(set(avoid_match))
+            print(f'❌❌❌❌❌❌击中屏蔽词: {am} -> {title} -> {link}')
+            return (False, am)
         else:
-            return match.group()
-    return False
+            return (True, list(set(match)))
+    return (False, [])
+
 
 def filter_ur_need(content):
     re_need = ".*{0}+.*".format(appendKeys(conditions))
@@ -90,8 +144,3 @@ def filter_ur_need(content):
     if match:
         return match.group()
     return False
-
-
-format_dateTime = '%Y-%m-%d %H:%M'
-format_date = '%Y-%m-%d'
-format_dateTimed = '%Y-%m-%d %H:%M:%S'
