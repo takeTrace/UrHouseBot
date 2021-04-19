@@ -1,0 +1,25 @@
+# fetchs
+# 查询本项目常用信息 logs 的快捷方式
+# 请 source 本文件.
+
+currentDir="$(dirname $0)"
+
+function getAll() {
+    greppip grep $1
+}
+
+function getAllTitle() {
+    getAll "标题"
+}
+
+function getAllTarget() {
+    getAll "解析目标帖子:"
+}
+
+function greppip() {
+    cat $currentDir/latest.log | $* | grep -r "[^0123456789]\d\d\d\d[^0123456789-]"
+}
+
+function logtail() {
+    tail -1000 -f $currentDir/latest.log
+}

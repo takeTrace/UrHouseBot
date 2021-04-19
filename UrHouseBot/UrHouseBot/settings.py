@@ -11,6 +11,10 @@
 
 BOT_NAME = 'UrHouseBot'
 
+LOG_LEVEL='DEBUG'
+LOG_STDOUT = True
+LOG_FORMAT = '\x1b[0;0;34m%(asctime)s\x1b[0;0m \x1b[0;0;36m[%(name)s]\x1b[0;0m \x1b[0;0;31m%(levelname)s\x1b[0;0m: %(message)s' 
+
 SPIDER_MODULES = ['UrHouseBot.spiders']
 NEWSPIDER_MODULE = 'UrHouseBot.spiders'
 
@@ -19,7 +23,7 @@ NEWSPIDER_MODULE = 'UrHouseBot.spiders'
 #USER_AGENT = 'UrHouseBot (+http://www.yourdomain.com)'
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
