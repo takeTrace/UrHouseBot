@@ -13,12 +13,15 @@ import private
 import UrHouseBot.DouBanSelector as Selector
 
 import json
-import requests
+# import requests
 from UrHouseBot.NotifyTools import colorTitle, slackMe
 from UrHouseBot.Constants import URLS
 from UrHouseBot.DouBanSelector import SELECTOR
 
 duetime = 7
+
+doubanID = private.doubanAccount
+doubanPWD = private.doubanPwd
 
 redirectCount = {}
 class DoubangroupSpider(scrapy.Spider):
@@ -48,6 +51,8 @@ class DoubangroupSpider(scrapy.Spider):
       self.logger.info(DebugLevel.debug, content)
 
     def start_requests(self):
+        if not doubanID:
+            self.logger.info("没有豆瓣 id 和密码, 遇到需要登录的情况会失败")
         self.configs['stop'] = False
         toCrawl = self.startCrawl()
         for request in toCrawl:
@@ -76,6 +81,9 @@ class DoubangroupSpider(scrapy.Spider):
         '''
         登录表单填充，查看验证码
         '''
+        if not doubanID:
+            return
+
         self.logger.info("登录前表单填充")
         captcha_id = response.xpath(
             SELECTOR.usernameField).extract_first()
@@ -382,7 +390,7 @@ class DoubangroupSpider(scrapy.Spider):
                                       dont_filter=True,
                                       headers=self.headers,
                                       callback=self.parse_group)
-            request.meta["tag_info"] = f'tagInfo: {tag_info}'
+            request.meta["tag_info"] = f'{tag_info}'
             yield request
 
         self.logger.info(f' 🌞🌞🌞🌞🌞🌞🌞 爬取 {gtl} 小组 第 {page} 页内容, {totalTitleNum} 条帖子')
@@ -396,9 +404,9 @@ class DoubangroupSpider(scrapy.Spider):
                 # 时间不符合的跳过
                 need_more = False
                 if page == 1 and idx < 10:
-                    self.logger.info(colorTitle(f'页面符合要求的很少: 直接跳过: 组: {gtl}, page: {page}, index: {idx} > {time}>标题: {t}, link: {link}'))
+                    self.logger.info(colorTitle(f'页面符合要求的很少: 直接跳过: 组: {gtl}, page: {page}, index: {idx} > {time}>\n标题: {t}, link: {link} | {time}'))
                     return
-                self.logger.info(f'🕘🕘🕘🕘🕘🕘小组:{gtl}_时间过期: {time}, 标题: {title}, 链接: {link}')
+                self.logger.info(f'🕘🕘🕘🕘🕘🕘小组:{gtl}_时间过期: {time}, \n标题: {title}, 链接: {link} | {time}')
                 break
             # 时间符合要求
             #  楼主被屏蔽的跳过
@@ -451,7 +459,7 @@ class DoubangroupSpider(scrapy.Spider):
             req = scrapy.Request(monitorLink, dont_filter=True, headers=self.headers, callback=self.parse_group)
             req.meta['monitorKey'] = monitorKey
             if "监控中" not in req.meta.get('tag_info', ""):
-                req.meta['tag_info'] = tag_info + "监控中👁👁👁"
+                req.meta['tag_info'] = tag_info + "_监控中👁👁👁"
             self.logger.info(f"👁{monitorKey}  __正在监控: {monitorLink}")
             yield req
 
@@ -522,7 +530,7 @@ class DoubangroupSpider(scrapy.Spider):
                 continue
 
             date = datetime.datetime.today().strftime('%Y-%m-%d %H:%M')
-            self.logger.info(f'\n可以解析帖子->时间: {date} 标题: {colorTitle(title)} | link: {link}')
+            self.logger.info(f'\n可以解析帖子->时间: {date} \n标题: {colorTitle(title)} | link: {link} | {date}')
             # slackMe(' \n '.join([
             #     f'```{">"*15}{time} \n帖子\nfrom: {tag_info} \n ` <{link}|{title}> `  \n{time} ```',
             #     f' ` <{link}|{title}> `  \n{time}'
@@ -610,7 +618,7 @@ class DoubangroupSpider(scrapy.Spider):
                 if parse_tool.is_need_parse(time):
                     return
                 date = datetime.datetime.today().strftime('%Y-%m-%d %H:%M')
-                self.logger.info(f'{">"*15}\n不是目标但是没命中屏蔽词的:{date} > 楼主: {author} > from: {tagInfo} > {time} > 标题:{colorTitle(title)} | {response.url}\n')
+                self.logger.info(f'{">"*15}\n不是目标但是没命中屏蔽词的:{date} > 楼主: {author} > from: {tagInfo} > {time} > \n标题:{colorTitle(title)} | {response.url} | {time}\n')
             #   time = response.xpath(
             #     'string(//span[@class="from"]/following-sibling::span)').get(
             #     ).strip()
@@ -677,7 +685,7 @@ class DoubangroupSpider(scrapy.Spider):
         if len(re.findall(r'豆友\d{6,9}', reply)) > 10:
             self.logger.info(f'可能是机器人刷帖: "豆友 xxxx 回复数量: {len(replies)} 条')
             return
-        (hit, keys) = parse_tool.filter_title(content + reply + f'解析目标{title}' + author,
+        (hit, keys) = parse_tool.filter_title(content + reply + f'解析目标: {title}' + author,
                                               title, response.url, use='content')
 
         def strip(s):

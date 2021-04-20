@@ -2,6 +2,7 @@ import re
 import random
 from datetime import datetime
 import json
+import logging
 
 limitTime = 7
 
@@ -73,9 +74,9 @@ def getRegions():
             try:
                 data = json.load(f)
             except:
-                print('regions文件错误')
+                logging.debug('regions文件错误')
     except:
-        print('没有regions文件')
+        logging.debug('没有regions文件')
         with open('./regions.json', 'w') as f:
             json.dump(data, f)
     return list(set(data))
@@ -88,9 +89,9 @@ def getAvoids(use='title'):
             try:
                 data = json.load(f)
             except:
-                print('avoid文件错误')
+                logging.debug('avoid文件错误')
     except:
-        print('没有avoid文件')
+        logging.debug('没有avoid文件')
         with open('./avoids.json', 'w') as f:
             json.dump(data, f)
     return list(set(data[use]+data['content']))
@@ -105,7 +106,7 @@ def appendKeys(dicts):
 
 def get_next_page_link(response):
     next = response.css('.next a::attr(href)').extract_first()
-    # print('下一页: ' + next)
+    # logging.debug('下一页: ' + next)
     return next
 
 
@@ -138,15 +139,13 @@ def random_cat():
 def filter_title(content, title=None, link=None, use='title'):
     content = content.strip()
     re_region = "{0}+".format(appendKeys(getRegions()))
-    # re_region = re_region#.replace(r'{', r'\{').replace(r'}', r'\}')
     match = re.findall(re_region, content)
     if match:
         re_avoid = '{0}+'.format(appendKeys(getAvoids(use)))
-        # re_avoid = re_avoid#.replace(r'{', r'\{').replace(r'}', r'\}')
         avoid_match = re.findall(re_avoid, content)
         if avoid_match:
             am = list(set(avoid_match))
-            print(f'❌❌❌❌❌❌击中屏蔽词: {am} -> {title} -> {link}')
+            logging.debug(f'❌❌❌❌❌❌击中屏蔽词: {am} -> {title} -> {link}')
             return (False, am)
         else:
             return (True, list(set(match)))

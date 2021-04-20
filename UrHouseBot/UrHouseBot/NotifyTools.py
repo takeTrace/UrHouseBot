@@ -3,13 +3,20 @@
 import requests
 import json
 import private
+import logging
 
 def slackMe(content):
+    slackToken = private.slackBotOpenInfoShare
+    if not slackToken:
+        logging.info('没有 slacktoken, 命中信息将不会发送到 slack')
+        return
+
+
     slack_data = {
         'text': content,
         'type': 'mrkdwn',
     }
-    response = requests.post(private.slackBotOpenInfoShare,
+    response = requests.post(slackToken,
                              data=json.dumps(slack_data),
                              headers={'Content-Type': 'application/json'})
     if response.status_code != 200:
