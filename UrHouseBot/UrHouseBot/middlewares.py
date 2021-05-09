@@ -5,12 +5,13 @@
 # See documentation in:
 # http://doc.scrapy.org/en/latest/topics/spider-middleware.html
 
+from UrHouseBot.settings import PROXY_HOST
 from scrapy import signals, Request
 import requests
 
 from UrHouseBot.spiders import doubanGroup
 
-aws = "http://13.125.214.188"
+proxy_host = PROXY_HOST
 
 
 class UrhousebotSpiderMiddleware(object):
@@ -110,7 +111,7 @@ class RandomUserAgentMiddlware(object):
 
 
 def getSmartProxy():
-    res = requests.get(f'{aws}:35050/api/v1/proxy/?region=中国')
+    res = requests.get(f'{proxy_host}:35050/api/v1/proxy/?region=中国')
     if res.status_code == 200:
         p = res.json()['data']['proxy']
         return f'http://{p}'
@@ -120,7 +121,7 @@ def getSmartProxy():
 
 
 def proxyFromproxy_pool():
-    res = requests.get(f'{aws}:5010/get')
+    res = requests.get(f'{proxy_host}:5010/get')
     if res.status_code == 200:
         p = res.json()['data']['proxy']
         return f'http://{p}'
@@ -130,7 +131,7 @@ def proxyFromproxy_pool():
 
 
 def proxyFromProxyPool():
-    res = requests.get(f'{aws}:5555/random')
+    res = requests.get(f'{proxy_host}:5555/random')
     if res.status_code == 200:
         p = f'http://{res.text.strip()}'
         return p

@@ -4,7 +4,10 @@ cd ..
 source ./venv/bin/activate
 echo '激活虚拟环境 ------'
 
-command -v scrapy > /dev/null || echo '安装依赖 ------' && pip install -r requirements.txt
+which python
+which scrapy
+
+command -v scrapy > /dev/null || { echo '安装依赖 ------' && pip install -r requirements.txt; exit; }
 
 cd $currentDir
 
